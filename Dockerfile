@@ -1,6 +1,6 @@
 FROM nginx:mainline-alpine-slim
 
-RUN set -e; rm /etc/nginx/conf.d/default.conf && cat <<'EOF' > /etc/nginx/conf.d/default.conf
+RUN cat <<'EOF' >/etc/nginx/conf.d/default.conf
 server {
     listen 80 default_server;
     server_name _;
@@ -34,5 +34,7 @@ server {
     }
 }
 EOF
+
+RUN sed -i 's/worker_processes  auto;/worker_processes  1;/' /etc/nginx/nginx.conf && sed -i 's#error_log  /var/log/nginx/error.log notice;#error_log  /var/log/nginx/error.log warn;#' /etc/nginx/nginx.conf && rm -f /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
 
 COPY site /usr/share/nginx/html
